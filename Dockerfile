@@ -29,9 +29,9 @@ RUN go get -d -v ./...
 
 # Build and copy final result
 RUN uname -a
-RUN if [ $(uname -m) == x86_64 ]; then make linux64 && cp ./bin/glauth64 /app/glauth; fi
-RUN if [ $(uname -m) == aarch64 ]; then make linuxarm64 && cp ./bin/glauth-arm64 /app/glauth; fi
-RUN if [ $(uname -m) == armv7l ]; then make linuxarm32 && cp ./bin/glauth-arm32 /app/glauth; fi
+RUN if [ $(uname -m) == x86_64 ]; then make linux64 && cp ./bin/glauth64 /app/glauth; fi; \
+    if [ $(uname -m) == aarch64 ]; then make linuxarm64 && cp ./bin/glauth-arm64 /app/glauth; fi; \
+    if [ $(uname -m) == armv7l ]; then make linuxarm32 && cp ./bin/glauth-arm32 /app/glauth; fi
 
 # Check glauth works
 RUN /app/glauth --version
@@ -53,8 +53,8 @@ COPY --from=build /app/glauth /app/glauth
 COPY --from=build /app/scripts/docker/start.sh /app/docker/
 COPY --from=build /app/scripts/docker/default-config.cfg /app/docker/
 
-# Install ldapsearch for container health checks, then ensure ldapsearch is installed
-RUN apk update && apk add --no-cache dumb-init openldap-clients && which ldapsearch && rm -rf /var/cache/apk/*
+# Install dependencies
+RUN apk update && apk add --no-cache dumb-init openldap-clients tcpdump strace && which ldapsearch && rm -rf /var/cache/apk/*
 
 ARG arg_k8s_application_commit arg_k8s_application_version
 ENV K8S_APPLICATION_COMMIT=$arg_k8s_application_commit K8S_APPLICATION_VERSION=$arg_k8s_application_version

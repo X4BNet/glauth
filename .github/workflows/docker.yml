@@ -17,6 +17,7 @@ jobs:
 
       - name: Build image
         run: |
+          cd v2
           docker build . --build-arg arg_k8s_application_commit=${{ github.sha }} --build-arg arg_k8s_application_version=${{ github.ref }} --tag $IMAGE_NAME
 
       - name: log in github registry
@@ -31,7 +32,7 @@ jobs:
 
       - name: Push image
         run: |
-          IMAGE_ID=X4BNet/$IMAGE_NAME
+          IMAGE_ID=x4bnet/$IMAGE_NAME
 
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
